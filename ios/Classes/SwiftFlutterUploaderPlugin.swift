@@ -132,6 +132,18 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         self.session = URLSession(configuration: sessionConfiguration, delegate: self, delegateQueue: queue)
     }
 
+    private func  setCookiesToSession(jwtToken: String) {
+        let cookieProperties: [HTTPCookiePropertyKey : Any] = [
+            HTTPCookiePropertyKey.domain: ".dev.247software.com",
+            HTTPCookiePropertyKey.path: "/",
+            HTTPCookiePropertyKey.name: "jwt_token",
+            HTTPCookiePropertyKey.value: jwtToken,
+            HTTPCookiePropertyKey.secure: "TRUE",
+            HTTPCookiePropertyKey.expires: "Fri, 30 Dec 2019 07:07:23 GMT"
+        ]
+        let cookie = HTTPCookie(properties: cookieProperties)!
+        session.configuration.httpCookieStorage?.setCookie(cookie)
+    }
     private func enqueueMethodCall(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         let args = call.arguments as! [String: Any?]
         let urlString = args["url"] as! String
@@ -140,6 +152,9 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let data = args["data"] as? [String: Any?]
         let files = args["files"] as? [Any]
         let tag = args["tag"] as? String
+        if let jwtToken = args["jwt_token"] as? String{
+            self.setCookiesToSession(jwtToken)
+        }
 
         let validHttpMethods = ["POST", "PUT", "PATCH"]
         let httpMethod = method.uppercased()
@@ -179,7 +194,11 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let headers = args["headers"] as? [String: Any?]
         let file = args["file"] as? [String: Any?]
         let tag = args["tag"] as? String
-
+        
+        if let jwtToken = args["jwt_token"] as? String{
+            self.setCookiesToSession(jwtToken)
+        }
+        
         let validHttpMethods = ["POST", "PUT", "PATCH"]
         let httpMethod = method.uppercased()
 

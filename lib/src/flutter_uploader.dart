@@ -58,6 +58,7 @@ class FlutterUploader {
     Map<String, String> data,
     bool showNotification = false,
     String tag,
+    String jwtToken,
   }) async {
     assert(method != null);
 
@@ -73,7 +74,8 @@ class FlutterUploader {
         'headers': headers,
         'data': data,
         'show_notification': showNotification,
-        'tag': tag
+        'tag': tag,
+        'jwt_token': jwtToken,
       });
     } on PlatformException catch (e, stackTrace) {
       _responseController?.sink?.addError(
@@ -107,6 +109,7 @@ class FlutterUploader {
     Map<String, String> headers,
     bool showNotification = false,
     String tag,
+    String jwtToken,
   }) async {
     assert(method != null);
 
@@ -117,7 +120,8 @@ class FlutterUploader {
         'file': file.toJson(),
         'headers': headers,
         'show_notification': showNotification,
-        'tag': tag
+        'tag': tag,
+        'jwt_token': jwtToken,
       });
     } on PlatformException catch (e, stackTrace) {
       _responseController?.sink?.addError(
