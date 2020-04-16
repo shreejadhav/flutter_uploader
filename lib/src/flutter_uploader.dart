@@ -59,6 +59,7 @@ class FlutterUploader {
     bool showNotification = false,
     String tag,
     String jwtToken,
+    String domain,
   }) async {
     assert(method != null);
 
@@ -76,6 +77,7 @@ class FlutterUploader {
         'show_notification': showNotification,
         'tag': tag,
         'jwt_token': jwtToken,
+        'domain': domain,
       });
     } on PlatformException catch (e, stackTrace) {
       _responseController?.sink?.addError(
