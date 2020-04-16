@@ -132,9 +132,9 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         self.session = URLSession(configuration: sessionConfiguration, delegate: self, delegateQueue: queue)
     }
 
-    private func  setCookiesToSession(jwtToken: String) {
+    private func  setCookiesToSession(jwtToken: String,domain: String) {
         let cookieProperties: [HTTPCookiePropertyKey : Any] = [
-            HTTPCookiePropertyKey.domain: ".dev.247software.com",
+            HTTPCookiePropertyKey.domain: domain,
             HTTPCookiePropertyKey.path: "/",
             HTTPCookiePropertyKey.name: "jwt_token",
             HTTPCookiePropertyKey.value: jwtToken,
@@ -144,6 +144,14 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let cookie = HTTPCookie(properties: cookieProperties)!
         session.configuration.httpCookieStorage?.setCookie(cookie)
     }
+    private func deleteCookie(of session: URLSession){
+        let oldCookieArray = session.configuration.httpCookieStorage?.sortedCookies(using: [NSSortDescriptor.init(key: "jwt_token", ascending: true)])
+        if let oldCookie = oldCookieArray {
+            for cookie in oldCookie {
+                session.configuration.httpCookieStorage?.deleteCookie(cookie)
+            }
+        }
+    }
     private func enqueueMethodCall(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         let args = call.arguments as! [String: Any?]
         let urlString = args["url"] as! String
@@ -152,8 +160,11 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let data = args["data"] as? [String: Any?]
         let files = args["files"] as? [Any]
         let tag = args["tag"] as? String
+        let domain = args["domain"] as? String
+
+        self.deleteCookie()
         if let jwtToken = args["jwt_token"] as? String{
-            self.setCookiesToSession(jwtToken: jwtToken)
+            self.setCookiesToSession(jwtToken: jwtToken,domain:domain)
         }
 
         let validHttpMethods = ["POST", "PUT", "PATCH"]
