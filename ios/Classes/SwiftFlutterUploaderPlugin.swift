@@ -144,7 +144,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let cookie = HTTPCookie(properties: cookieProperties)!
         session.configuration.httpCookieStorage?.setCookie(cookie)
     }
-    private func deleteCookie(of session: URLSession){
+    private func deleteCookies(){
         let oldCookieArray = session.configuration.httpCookieStorage?.sortedCookies(using: [NSSortDescriptor.init(key: "jwt_token", ascending: true)])
         if let oldCookie = oldCookieArray {
             for cookie in oldCookie {
@@ -162,7 +162,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let tag = args["tag"] as? String
         let domain = args["domain"] as? String
 
-        self.deleteCookie()
+        self.deleteCookies()
         if let jwtToken = args["jwt_token"] as? String{
             self.setCookiesToSession(jwtToken: jwtToken,domain:domain)
         }
