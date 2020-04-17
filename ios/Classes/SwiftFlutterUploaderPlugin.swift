@@ -164,7 +164,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
 
         self.deleteCookies()
         if let jwtToken = args["jwt_token"] as? String{
-            self.setCookiesToSession(jwtToken: jwtToken,domain:domain)
+            self.setCookiesToSession(jwtToken: jwtToken,domain:domain ?? "")
         }
 
         let validHttpMethods = ["POST", "PUT", "PATCH"]
@@ -205,9 +205,10 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin, URLSessionTask
         let headers = args["headers"] as? [String: Any?]
         let file = args["file"] as? [String: Any?]
         let tag = args["tag"] as? String
-        
+        let domain = args["domain"] as? String
+        self.deleteCookies()
         if let jwtToken = args["jwt_token"] as? String{
-            self.setCookiesToSession(jwtToken: jwtToken)
+            self.setCookiesToSession(jwtToken: jwtToken,domain:domain ?? "")
         }
         
         let validHttpMethods = ["POST", "PUT", "PATCH"]
