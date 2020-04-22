@@ -113,7 +113,7 @@ public class UploadWorker extends Worker implements CountProgressListener {
 
         try {
             Map<String, String> headers = null;
-            Map<String, String> parameters = null;
+            Map<String, Object> parameters = null;
             List<FileItem> files = new ArrayList<>();
             Gson gson = new Gson();
             Type type = new TypeToken<Map<String, String>>() {
@@ -133,45 +133,13 @@ public class UploadWorker extends Worker implements CountProgressListener {
                 files = gson.fromJson(filesJson, fileItemType);
             }
 
-            final RequestBody innerRequestBody;
+            RequestBody innerRequestBody = null;
+            if (!isAPICall){
+                if (isBinaryUpload) {
+                    final FileItem item = files.get(0);
+                    File file = new File(item.getPath());
 
-            if (isBinaryUpload) {
-                final FileItem item = files.get(0);
-                File file = new File(item.getPath());
-
-                if (!file.exists()) {
-                    return Result.failure(
-                            createOutputErrorData(
-                                    UploadStatus.FAILED,
-                                    DEFAULT_ERROR_STATUS_CODE,
-                                    "invalid_files",
-                                    "There are no items to upload",
-                                    null));
-                }
-
-                String mimeType = GetMimeType(item.getPath());
-                MediaType contentType = MediaType.parse(mimeType);
-                innerRequestBody = RequestBody.create(file, contentType);
-            } else {
-                MultipartBody.Builder formRequestBuilder = prepareRequest(parameters, null);
-                if (!isAPICall) {
-                    int fileExistsCount = 0;
-                    for (FileItem item : files) {
-                        File file = new File(item.getPath());
-                        Log.d(TAG, "attaching file: " + item.getPath());
-
-                        if (file.exists() && file.isFile()) {
-                            fileExistsCount++;
-                            String mimeType = GetMimeType(item.getPath());
-                            MediaType contentType = MediaType.parse(mimeType);
-                            RequestBody fileBody = RequestBody.create(file, contentType);
-                            formRequestBuilder.addFormDataPart(item.getFieldname(), item.getFilename(), fileBody);
-                        } else {
-                            Log.d(TAG, "File does not exists -> file:" + item.getPath());
-                        }
-                    }
-
-                    if (fileExistsCount <= 0) {
+                    if (!file.exists()) {
                         return Result.failure(
                                 createOutputErrorData(
                                         UploadStatus.FAILED,
@@ -180,10 +148,52 @@ public class UploadWorker extends Worker implements CountProgressListener {
                                         "There are no items to upload",
                                         null));
                     }
-                }
 
-                innerRequestBody = formRequestBuilder.build();
+                    String mimeType = GetMimeType(item.getPath());
+                    MediaType contentType = MediaType.parse(mimeType);
+                    innerRequestBody = RequestBody.create(file, contentType);
+                } else {
+                    Map<String,String> stringMap=new HashMap<>();
+                    for (String key:parameters.keySet()){
+                        stringMap.put(key,String.valueOf(parameters.get(key)));
+                    }
+                    MultipartBody.Builder formRequestBuilder = prepareRequest(stringMap, null);
+                    if (!isAPICall) {
+                        int fileExistsCount = 0;
+                        for (FileItem item : files) {
+                            File file = new File(item.getPath());
+                            Log.d(TAG, "attaching file: " + item.getPath());
+
+                            if (file.exists() && file.isFile()) {
+                                fileExistsCount++;
+                                String mimeType = GetMimeType(item.getPath());
+                                MediaType contentType = MediaType.parse(mimeType);
+                                RequestBody fileBody = RequestBody.create(file, contentType);
+                                formRequestBuilder.addFormDataPart(item.getFieldname(), item.getFilename(), fileBody);
+                            } else {
+                                Log.d(TAG, "File does not exists -> file:" + item.getPath());
+                            }
+                        }
+
+                        if (fileExistsCount <= 0) {
+                            return Result.failure(
+                                    createOutputErrorData(
+                                            UploadStatus.FAILED,
+                                            DEFAULT_ERROR_STATUS_CODE,
+                                            "invalid_files",
+                                            "There are no items to upload",
+                                            null));
+                        }
+                    }
+
+                    innerRequestBody = formRequestBuilder.build();
+                }
+            }else{
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                innerRequestBody=RequestBody.create(JSON,parametersJson);
             }
+
+
 
             RequestBody requestBody = new CountingRequestBody(innerRequestBody, getId().toString(), this);
             Request.Builder requestBuilder = new Request.Builder();
