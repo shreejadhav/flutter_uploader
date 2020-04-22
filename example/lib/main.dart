@@ -11,10 +11,10 @@ import 'package:path/path.dart';
 
 const String title = "FileUpload Sample app";
 const String uploadURL =
-   "https://us-central1-flutteruploader.cloudfunctions.net/upload";
+    "https://us-central1-flutteruploader.cloudfunctions.net/upload";
 
 const String uploadBinaryURL =
-   "https://us-central1-flutteruploader.cloudfunctions.net/upload/binary";
+    "https://us-central1-flutteruploader.cloudfunctions.net/upload/binary";
 
 void main() => runApp(App());
 
@@ -79,8 +79,8 @@ class UploadItem {
 
   bool isCompleted() =>
       this.status == UploadTaskStatus.canceled ||
-      this.status == UploadTaskStatus.complete ||
-      this.status == UploadTaskStatus.failed;
+          this.status == UploadTaskStatus.complete ||
+          this.status == UploadTaskStatus.failed;
 }
 
 enum MediaType { Image, Video }
@@ -113,7 +113,9 @@ class _UploadScreenState extends State<UploadScreen> {
     });
     _resultSubscription = uploader.result.listen((result) {
       print(
-          "id: ${result.taskId}, status: ${result.status}, response: ${result.response}, statusCode: ${result.statusCode}, tag: ${result.tag}, headers: ${result.headers}");
+          "id: ${result.taskId}, status: ${result.status}, response: ${result
+              .response}, statusCode: ${result.statusCode}, tag: ${result
+              .tag}, headers: ${result.headers}");
 
       final task = _tasks[result.tag];
 
@@ -162,7 +164,10 @@ class _UploadScreenState extends State<UploadScreen> {
             Container(height: 20.0),
             Text(
               'multipart/form-data uploads',
-              style: Theme.of(context).textTheme.subhead,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -175,13 +180,21 @@ class _UploadScreenState extends State<UploadScreen> {
                 RaisedButton(
                   onPressed: () => getVideo(binary: false),
                   child: Text("upload video"),
+                ),
+                Container(width: 20.0),
+                RaisedButton(
+                  onPressed: () => _makeAPIRequest(),
+                  child: Text("API request"),
                 )
               ],
             ),
             Container(height: 20.0),
             Text(
               'binary uploads',
-              style: Theme.of(context).textTheme.subhead,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead,
             ),
             Text('this will upload selected files as binary'),
             Row(
@@ -246,25 +259,26 @@ class _UploadScreenState extends State<UploadScreen> {
 
       var taskId = binary
           ? await uploader.enqueueBinary(
-              url: url,
-              file: fileItem,
-              method: UploadMethod.POST,
-              tag: tag,
-              showNotification: true,
-            )
+        url: url,
+        file: fileItem,
+        method: UploadMethod.POST,
+        tag: tag,
+        showNotification: true,
+      )
           : await uploader.enqueue(
-              url: url,
-              data: {"name": "john"},
-              files: [fileItem],
-              method: UploadMethod.POST,
-              tag: tag,
-              showNotification: true,
-            );
+        url: url,
+        data: {"name": "john"},
+        files: [fileItem],
+        method: UploadMethod.POST,
+        tag: tag,
+        showNotification: true,
+      );
 
       setState(() {
         _tasks.putIfAbsent(
             tag,
-            () => UploadItem(
+                () =>
+                UploadItem(
                   id: taskId,
                   tag: tag,
                   path: image.path,
@@ -291,25 +305,26 @@ class _UploadScreenState extends State<UploadScreen> {
 
       var taskId = binary
           ? await uploader.enqueueBinary(
-              url: url,
-              file: fileItem,
-              method: UploadMethod.POST,
-              tag: tag,
-              showNotification: true,
-            )
+        url: url,
+        file: fileItem,
+        method: UploadMethod.POST,
+        tag: tag,
+        showNotification: true,
+      )
           : await uploader.enqueue(
-              url: url,
-              data: {"name": "john"},
-              files: [fileItem],
-              method: UploadMethod.POST,
-              tag: tag,
-              showNotification: true,
-            );
+        url: url,
+        data: {"name": "john"},
+        files: [fileItem],
+        method: UploadMethod.POST,
+        tag: tag,
+        showNotification: true,
+      );
 
       setState(() {
         _tasks.putIfAbsent(
             tag,
-            () => UploadItem(
+                () =>
+                UploadItem(
                   id: taskId,
                   tag: tag,
                   path: video.path,
@@ -322,6 +337,20 @@ class _UploadScreenState extends State<UploadScreen> {
 
   Future cancelUpload(String id) async {
     await uploader.cancel(taskId: id);
+  }
+
+  _makeAPIRequest() async{
+//    curl --location --request POST 'https://postman-echo.com/post' \
+//    --data-urlencode 'foo1=bar1' \
+//    --data-urlencode 'foo2=bar2'
+    var id=await uploader.enqueue(url: "https://postman-echo.com/post",
+        files: [],
+        isAPIRequest: true,
+        data: {"foo1": "bar1", "foo2": "bar2"});
+    print("API request id $id");
+    uploader.result.where((event)=>event.taskId==id).listen((event){
+      print("repsone ////////////////////////// $event");
+    });
   }
 }
 
@@ -345,13 +374,13 @@ class UploadItemView extends StatelessWidget {
         : Container();
     final buttonWidget = item.status == UploadTaskStatus.running
         ? Container(
-            height: 50,
-            width: 50,
-            child: IconButton(
-              icon: Icon(Icons.cancel),
-              onPressed: () => onCancel(item.id),
-            ),
-          )
+      height: 50,
+      width: 50,
+      child: IconButton(
+        icon: Icon(Icons.cancel),
+        onPressed: () => onCancel(item.id),
+      ),
+    )
         : Container();
     return Row(
       children: <Widget>[

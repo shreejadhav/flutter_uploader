@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
@@ -197,6 +198,10 @@ public class UploadWorker extends Worker implements CountProgressListener {
 
             RequestBody requestBody = new CountingRequestBody(innerRequestBody, getId().toString(), this);
             Request.Builder requestBuilder = new Request.Builder();
+
+            if(!TextUtils.isEmpty(jwtToken)){
+                requestBuilder.addHeader("Cookie", "jwt_token="+jwtToken);
+            }
 
             if (headers != null) {
 
