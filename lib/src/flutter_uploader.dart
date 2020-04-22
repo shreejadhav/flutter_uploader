@@ -55,7 +55,7 @@ class FlutterUploader {
     @required List<FileItem> files,
     UploadMethod method = UploadMethod.POST,
     Map<String, String> headers,
-    Map<String, String> data,
+    Map<String, dynamic> data,
     bool showNotification = false,
     String tag,
     String jwtToken,
