@@ -231,6 +231,8 @@ public class FlutterUploaderPlugin
     Map<String, String> headers = call.argument("headers");
     boolean showNotification = call.argument("show_notification");
     String tag = call.argument("tag");
+    String jwtToken = call.argument("jwt_token");
+    boolean isAPIRequest=call.argument("is_api_request");
 
     List<String> methods = Arrays.asList(validHttpMethods);
 
@@ -261,7 +263,7 @@ public class FlutterUploaderPlugin
                 connectionTimeout,
                 showNotification,
                 false,
-                tag));
+                tag,isAPIRequest,jwtToken));
     WorkManager.getInstance(register.context()).enqueue(request);
     String taskId = request.getId().toString();
     if (!tasks.containsKey(taskId)) {
@@ -279,6 +281,8 @@ public class FlutterUploaderPlugin
     Map<String, String> headers = call.argument("headers");
     boolean showNotification = call.argument("show_notification");
     String tag = call.argument("tag");
+    String jwtToken = call.argument("jwt_token");
+
 
     List<String> methods = Arrays.asList(validHttpMethods);
 
@@ -303,7 +307,7 @@ public class FlutterUploaderPlugin
                 connectionTimeout,
                 showNotification,
                 true,
-                tag));
+                tag,false,jwtToken));
     WorkManager.getInstance(register.context()).enqueue(request);
     String taskId = request.getId().toString();
 
@@ -337,7 +341,9 @@ public class FlutterUploaderPlugin
             .putBoolean(UploadWorker.ARG_SHOW_NOTIFICATION, task.canShowNotification())
             .putBoolean(UploadWorker.ARG_BINARY_UPLOAD, task.isBinaryUpload())
             .putString(UploadWorker.ARG_UPLOAD_REQUEST_TAG, task.getTag())
-            .putInt(UploadWorker.ARG_ID, task.getId());
+            .putInt(UploadWorker.ARG_ID, task.getId())
+            .putString(UploadWorker.ARG_JWT,task.getJwtToken())
+            .putBoolean(UploadWorker.ARG_IS_API_REQUEST,task.isAPIRequest());
 
     List<FileItem> files = task.getFiles();
 

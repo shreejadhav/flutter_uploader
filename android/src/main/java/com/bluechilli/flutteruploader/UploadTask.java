@@ -16,6 +16,8 @@ public class UploadTask {
   private boolean _binaryUpload;
   private String _tag;
   private int _id;
+  private boolean _isAPIRequest;
+  private String _jwtToken;
 
   public UploadTask(
       int id,
@@ -27,7 +29,7 @@ public class UploadTask {
       int requestTimeoutInSeconds,
       boolean showNotification,
       boolean binaryUpload,
-      String tag) {
+      String tag,boolean isAPIRequest,String jwtToken) {
     _id = id;
     _url = url;
     _method = method;
@@ -38,6 +40,8 @@ public class UploadTask {
     _showNotification = showNotification;
     _binaryUpload = binaryUpload;
     _tag = tag;
+    _isAPIRequest=isAPIRequest;
+    _jwtToken =jwtToken;
   }
 
   public String getURL() {
@@ -82,5 +86,21 @@ public class UploadTask {
 
   public int getId() {
     return _id;
+  }
+
+  public boolean isAPIRequest() {
+    return _isAPIRequest;
+  }
+
+  public void setIsAPIRequest(boolean _isAPIRequest) {
+    this._isAPIRequest = _isAPIRequest;
+  }
+
+  public String getJwtToken() {
+    return _jwtToken;
+  }
+
+  public void setJwtToken(String jwtToken) {
+    this._jwtToken = jwtToken;
   }
 }

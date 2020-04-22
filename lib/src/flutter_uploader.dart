@@ -60,6 +60,7 @@ class FlutterUploader {
     String tag,
     String jwtToken,
     String domain,
+    bool isAPIRequest=false,
   }) async {
     assert(method != null);
 
@@ -78,6 +79,7 @@ class FlutterUploader {
         'tag': tag,
         'jwt_token': jwtToken,
         'domain': domain,
+        'is_api_request':isAPIRequest,
       });
     } on PlatformException catch (e, stackTrace) {
       _responseController?.sink?.addError(
