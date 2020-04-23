@@ -312,6 +312,8 @@ public class UploadWorker extends Worker implements CountProgressListener {
                 updateNotification(context, tag, UploadStatus.COMPLETE, 0, null);
             }
 
+            Log.d("uploader","result success returned");
+
             return Result.success(outputData);
 
         } catch (JsonIOException ex) {
