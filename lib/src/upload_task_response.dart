@@ -15,4 +15,9 @@ class UploadTaskResponse {
       this.status,
       this.headers,
       this.tag});
+
+  @override
+  String toString() {
+    return 'UploadTaskResponse{taskId: $taskId, response: $response, statusCode: $statusCode, status: $status, headers: $headers, tag: $tag}';
+  }
 }

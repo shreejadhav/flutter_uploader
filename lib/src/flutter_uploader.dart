@@ -215,6 +215,7 @@ class FlutterUploader {
         );
         break;
       case "uploadCompleted":
+        print("uploadCompleted");
         String id = call.arguments['task_id'];
         Map headers = call.arguments["headers"];
         String message = call.arguments["message"];
@@ -223,6 +224,9 @@ class FlutterUploader {
         String tag = call.arguments["tag"];
         Map<String, String> h = headers?.map(
             (key, value) => MapEntry<String, String>(key, value as String));
+
+        print(UploadTaskResponse);
+
 
         _responseController?.sink?.add(UploadTaskResponse(
           taskId: id,
