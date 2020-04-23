@@ -264,6 +264,7 @@ public class UploadWorker extends Worker implements CountProgressListener {
             boolean hasJsonResponse = true;
 
             String responseContentType = rheaders.get("content-type");
+            Log.d("uploader","content type:-"+responseContentType);
 
             if (responseContentType != null && responseContentType.contains("json")) {
                 hasJsonResponse = true;
