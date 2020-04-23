@@ -346,6 +346,7 @@ class _UploadScreenState extends State<UploadScreen> {
     var id=await uploader.enqueue(url: "https://postman-echo.com/post",
         files: [],
         isAPIRequest: true,
+        tag: "SSSS",
         data: {"foo1": "bar1", "foo2": "bar2"});
     print("API request id $id");
     uploader.result.where((event)=>event.taskId==id).listen((event){

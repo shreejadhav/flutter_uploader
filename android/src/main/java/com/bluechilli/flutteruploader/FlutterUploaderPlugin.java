@@ -161,6 +161,12 @@ public class FlutterUploaderPlugin
     switch (call.method) {
       case "enqueue":
         enqueue(call, result);
+        if(uploadCompletedObserver==null){
+          uploadCompletedObserver = new UploadCompletedObserver(this);
+          WorkManager.getInstance(register.context())
+                  .getWorkInfosByTagLiveData(TAG)
+                  .observeForever(uploadCompletedObserver);
+        }
         break;
       case "enqueueBinary":
         enqueueBinary(call, result);
