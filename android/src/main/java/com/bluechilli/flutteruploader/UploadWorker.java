@@ -280,6 +280,7 @@ public class UploadWorker extends Worker implements CountProgressListener {
 
             Log.d(TAG, "Response: " + responseString);
             Log.d(TAG, "Response header: " + responseHeaders);
+            Log.d(TAG, "Response response.isSuccessful: " + response.isSuccessful());
 
             if (!response.isSuccessful()) {
                 if (showNotification) {
