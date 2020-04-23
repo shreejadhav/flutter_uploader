@@ -3,6 +3,8 @@ package com.bluechilli.flutteruploader;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -100,14 +102,16 @@ public class FlutterUploaderPlugin
     @Override
     public void onChanged(List<WorkInfo> workInfoList) {
       FlutterUploaderPlugin plugin = this.plugin.get();
-
+      Log.d("uploader","Upload progress observer called");
       if (plugin == null) {
+        Log.d("uploader","plugin == null");
         return;
       }
 
       for (WorkInfo info : workInfoList) {
         String id = info.getId().toString();
         if (!plugin.completedTasks.containsKey(id)) {
+          Log.d("uploader","!plugin.completedTasks.containsKey(id)");
           if (info.getState().isFinished()) {
             plugin.completedTasks.put(id, true);
             Data outputData = info.getOutputData();
