@@ -182,6 +182,7 @@ public class FlutterUploaderPlugin
 
   @Override
   public void onActivityStarted(Activity activity) {
+    Log.d("uploader","onActivityStarted");
     if (activity == register.activity()) {
       Log.d("uploader","onActivityStarted");
       uploadProgressObserver = new UploadProgressObserver(this);
