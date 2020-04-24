@@ -163,8 +163,6 @@ public class UploadWorker extends Worker implements CountProgressListener {
                         int fileExistsCount = 0;
                         for (FileItem item : files) {
                             File file = new File(item.getPath());
-                            Log.d(TAG, "attaching file: " + item.getPath());
-
                             if (file.exists() && file.isFile()) {
                                 fileExistsCount++;
                                 String mimeType = GetMimeType(item.getPath());
@@ -264,7 +262,6 @@ public class UploadWorker extends Worker implements CountProgressListener {
             boolean hasJsonResponse = true;
 
             String responseContentType = rheaders.get("content-type");
-            Log.d("uploader","content type:-"+responseContentType);
 
             if (responseContentType != null && responseContentType.contains("json")) {
                 hasJsonResponse = true;
@@ -280,7 +277,6 @@ public class UploadWorker extends Worker implements CountProgressListener {
 
             Log.d(TAG, "Response: " + responseString);
             Log.d(TAG, "Response header: " + responseHeaders);
-            Log.d(TAG, "Response response.isSuccessful: " + response.isSuccessful());
 
             if (!response.isSuccessful()) {
                 if (showNotification) {
