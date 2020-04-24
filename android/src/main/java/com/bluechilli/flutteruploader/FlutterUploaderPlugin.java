@@ -55,8 +55,9 @@ public class FlutterUploaderPlugin
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     final FlutterUploaderPlugin plugin = new FlutterUploaderPlugin(registrar, channel);
     channel.setMethodCallHandler(plugin);
-
+    Log.d("uploader","in registerWith");
     if (registrar.activity() != null) {
+      Log.d("uploader","in registerWith activity not null");
       registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
     }
   }
