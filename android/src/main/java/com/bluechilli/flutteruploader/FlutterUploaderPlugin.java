@@ -3,7 +3,6 @@ package com.bluechilli.flutteruploader;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,13 +15,10 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -33,6 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** FlutterUploaderPlugin */
 public class FlutterUploaderPlugin
@@ -55,9 +57,8 @@ public class FlutterUploaderPlugin
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     final FlutterUploaderPlugin plugin = new FlutterUploaderPlugin(registrar, channel);
     channel.setMethodCallHandler(plugin);
-    Log.d("uploader","in registerWith");
+
     if (registrar.activity() != null) {
-      Log.d("uploader","in registerWith activity not null");
       registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
     }
   }
@@ -66,6 +67,13 @@ public class FlutterUploaderPlugin
     this.channel = channel;
     this.register = registrar;
     this.connectionTimeout = FlutterUploaderInitializer.getConnectionTimeout(registrar.context());
+
+    if(uploadCompletedObserver==null){
+      uploadCompletedObserver = new UploadCompletedObserver(this);
+      WorkManager.getInstance(register.context())
+              .getWorkInfosByTagLiveData(TAG)
+              .observeForever(uploadCompletedObserver);
+    }
   }
 
   static class UploadProgressObserver implements Observer<UploadProgress> {
@@ -103,16 +111,13 @@ public class FlutterUploaderPlugin
     @Override
     public void onChanged(List<WorkInfo> workInfoList) {
       FlutterUploaderPlugin plugin = this.plugin.get();
-      Log.d("uploader","Upload progress observer called");
       if (plugin == null) {
-        Log.d("uploader","plugin == null");
         return;
       }
 
       for (WorkInfo info : workInfoList) {
         String id = info.getId().toString();
         if (!plugin.completedTasks.containsKey(id)) {
-          Log.d("uploader","!plugin.completedTasks.containsKey(id)");
           if (info.getState().isFinished()) {
             plugin.completedTasks.put(id, true);
             Data outputData = info.getOutputData();
@@ -162,12 +167,6 @@ public class FlutterUploaderPlugin
     switch (call.method) {
       case "enqueue":
         enqueue(call, result);
-        if(uploadCompletedObserver==null){
-          uploadCompletedObserver = new UploadCompletedObserver(this);
-          WorkManager.getInstance(register.context())
-                  .getWorkInfosByTagLiveData(TAG)
-                  .observeForever(uploadCompletedObserver);
-        }
         break;
       case "enqueueBinary":
         enqueueBinary(call, result);
@@ -189,9 +188,7 @@ public class FlutterUploaderPlugin
 
   @Override
   public void onActivityStarted(Activity activity) {
-    Log.d("uploader","onActivityStarted");
     if (activity == register.activity()) {
-      Log.d("uploader","onActivityStarted");
       uploadProgressObserver = new UploadProgressObserver(this);
       UploadProgressReporter.getInstance().observeForever(uploadProgressObserver);
 
